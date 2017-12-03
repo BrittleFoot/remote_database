@@ -1,11 +1,11 @@
 #ifndef _SOCKLIB_C_
 #define _SOCKLIB_C_
 
-#include "sockheaders.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "sockheaders.h"
 #include "socklib.h"
 
 
@@ -78,12 +78,8 @@ int tcp_listen(SOCKET sock, int back_log) {
 
 
 SOCKET tcp_accept(SOCKET sock, const struct sockaddr_in *from_addr) {
-    int sockaddr_size = (int) sizeof(struct sockaddr);
-    SOCKET accepted = accept(sock, (struct sockaddr *) from_addr, &sockaddr_size);
-    if (accepted == INVALID_SOCKET) {
-        fprintf(stderr, "%s\n", "tcp socket accept error.");
-    }
-    return accepted;
+    socklen_t socklen = (int) sizeof(struct sockaddr);
+    return accept(sock, (struct sockaddr *) from_addr, &socklen);
 }
 
 
@@ -101,7 +97,12 @@ int tcp_recv(SOCKET sock, void *out_data, int recv_len) {
     int nrecv = recv(sock, (char *) out_data, recv_len, 0);
     if (nrecv < 0) {
         int err = -get_last_error();
-        fprintf(stderr, "%s: %d\n", "tcp send error", err);
+
+        if (WSAEWOULDBLOCK == -err) {
+            return err;
+        }
+
+        fprintf(stderr, "%s: %d\n", "tcp recv error", err);
         return err;
     }
     return nrecv;

@@ -1,9 +1,10 @@
-#ifndef _SOCKLIB_H_
-#define _SOCKLIB_H_
-
+#ifndef SOCKLIB_H_
+#define SOCKLIB_H_
 
 #include <stdbool.h>
 #include <stdint.h>
+
+#include "sockheaders.h"
 
 
 int startup();
@@ -30,4 +31,4 @@ int tcp_recv(SOCKET sock, void *out_data, int recv_len);
 
 int tcp_set_non_blocking(SOCKET sock, bool nya);
 
-#endif
+#endif  // SOCKLIB_H_
